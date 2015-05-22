@@ -1,0 +1,6 @@
+[package]
+
+name = "rust_project"
+version = "0.0.1"
+authors = [ "Cepreu <cepreu.mail@gmail.com>" ]
+
