@@ -5,14 +5,16 @@ use sdl2::pixels::PixelFormatEnum;
 use sdl2::rect::Rect;
 use sdl2::keyboard::Keycode;
 use sdl2::render::Renderer;
+use sdl2::Sdl;
 
 pub struct Canvas<'_> {
-    renderer: &'_ mut Renderer<'_>,
+    renderer: Renderer<'_>,
+    sdl_context: Sdl,
 }
 
 impl<'_> Canvas<'_> {
     pub fn new(x: u32, y: u32) -> Canvas<'_> {
-        let mut sdl_context = sdl2::init().video().unwrap();
+        let sdl_context = sdl2::init().video().unwrap();
 
         let window = sdl_context.window("rust-3d-renderer", x, y)
             .position_centered()
@@ -20,12 +22,12 @@ impl<'_> Canvas<'_> {
             .build()
             .unwrap();
 
-        let mut renderer = window.renderer().build().unwrap();
+        let renderer = window.renderer().build().unwrap();
        
-        Canvas { renderer: &mut renderer }
+        Canvas { renderer: renderer, sdl_context: sdl_context }
     }
     
-    pub fn point(&self, x: u32, y: u32) {
+    pub fn point(&mut self, x: u32, y: u32) {
         // FIXME: rework it
         let mut texture = self.renderer.create_texture_streaming(PixelFormatEnum::RGB24, (256, 256)).unwrap();
         // Create a red-green gradient
@@ -46,13 +48,12 @@ impl<'_> Canvas<'_> {
         self.renderer.present();
     }
     
-    pub fn wait_for_ESC(&self) {
-        let mut sdl_context = sdl2::init().video().unwrap();
+    pub fn wait_for_esc(&mut self) {
 
         let mut running = true;
 
         while running {
-            for event in sdl_context.event_pump().poll_iter() {
+            for event in self.sdl_context.event_pump().poll_iter() {
                 use sdl2::event::Event;
 
                 match event {
