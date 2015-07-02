@@ -6,6 +6,6 @@ mod canvas;
 fn main() {
     println!("Hello World!");
     let mut canvas = canvas::Canvas::new(800, 600);
-    canvas.point(400, 300);
+    canvas.set(400, 300, 0xFFFFFF);
     canvas.wait_for_esc();
 }
