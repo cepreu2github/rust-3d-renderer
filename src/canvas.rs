@@ -7,15 +7,15 @@ use sdl2::Sdl;
 use sdl2::pixels::Color;
 use sdl2::rect::Point;
 
-pub struct Canvas<'_> {
-    renderer: Renderer<'_>,
+pub struct Canvas {
+    renderer: Renderer<'static>,
     sdl_context: Sdl,
     xsize: u32,
     ysize: u32,
 }
 
-impl<'_> Canvas<'_> {
-    pub fn new(x: u32, y: u32) -> Canvas<'_> {
+impl Canvas {
+    pub fn new(x: u32, y: u32) -> Canvas {
         let sdl_context = sdl2::init().video().unwrap();
 
         let window = sdl_context.window("rust-3d-renderer", x, y)
