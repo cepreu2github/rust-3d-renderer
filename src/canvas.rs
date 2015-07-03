@@ -1,11 +1,11 @@
 // Copyright (C) Cepreu <cepreu.mail@gmail.com> under GPLv2 and higher
-extern crate sdl2;
-
+use sdl2;
 use sdl2::keyboard::Keycode;
 use sdl2::render::Renderer;
 use sdl2::Sdl;
 use sdl2::pixels::Color;
 use sdl2::rect::Point;
+use std::mem;
 
 pub struct Canvas {
     renderer: Renderer<'static>,
@@ -61,49 +61,33 @@ impl Canvas {
     
     // ============================================ BELOW IS PLATFORM INDEPENDENT CODE
 
-    pub fn line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, color: u32) {
-        if (x1 == x2) && (y1 == y2) {
-            self.set(x1, y1, color);
+    pub fn line(&mut self, mut x0: i32, mut y0: i32, mut x1: i32, mut y1: i32, color: u32) {
+        let mut steep = false;
+        if (x0-x1).abs() < (y0-y1).abs() {
+            mem::swap(&mut x0, &mut y0);
+            mem::swap(&mut x1, &mut y1);
+            steep = true;
         }
-        if (x1-x2).abs() > (y1-y2).abs() {
-            if x1 < x2 {
-                let mut yi = y1;
-                for xi in x1..x2+1 {
-                    let p = (y2-y1)*xi + x2*y1 - x1*y2;
-                    if yi*(x2-x1) < p + (y2-y1)/2 {
-                        yi = yi+1;
-                    }
-                    self.set(xi, yi, color);
-                }
+        if x0>x1 {
+            mem::swap(&mut x0, &mut x1);
+            mem::swap(&mut y0, &mut y1);
+        }
+        let dx = x1-x0;
+        let dy = y1-y0;
+        let derror2 = dy.abs()*2;
+        let mut error2 = 0;
+        let mut y = y0;
+        for x in x0..x1+1 {
+            if steep {
+                self.set(y, x, color);
             } else {
-                let mut yi = y2;
-                for xi in x2..x1+1 {
-                    let p = (y1-y2)*xi + x1*y2 - x2*y1;
-                    if yi*(x1-x2) < p + (y1-y2)/2 {
-                        yi = yi+1;
-                    }
-                    self.set(xi, yi, color);
-                }
+                self.set(x, y, color);
             }
-        } else {
-            if y1 < y2 {
-                let mut xi = x1;
-                for yi in y1..y2+1 {
-                    let p = yi*(x2-x1) - x2*y1 + x1*y2;
-                    if xi*(y2-y1) < p + (y2-y1)/2 {
-                        xi = xi+1;
-                    }
-                    self.set(xi, yi, color);
-                }
-            } else {
-                let mut xi = x2;
-                for yi in y2..y1+1 {
-                    let p = yi*(x1-x2) - x1*y2 + x2*y1;
-                    if xi*(y1-y2) < p + (y1-y2)/2 {
-                        xi = xi+1;
-                    }
-                    self.set(xi, yi, color);
-                }
+            error2 += derror2;
+
+            if error2 > dx {
+                y += if y1>y0 { 1 } else { -1 };
+                error2 -= dx*2;
             }
         }
     }
