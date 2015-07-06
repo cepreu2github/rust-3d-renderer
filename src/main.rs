@@ -5,6 +5,10 @@ extern crate log;
 extern crate env_logger;
 
 mod canvas;
+mod geometry;
+mod model;
+
+use model::Model;
 
 const WHITE: u32 = 0xFFFFFF;
 const RED: u32 = 0xFF0000;
@@ -21,6 +25,7 @@ fn test_line() {
 fn main() {
     env_logger::init().unwrap();
     info!("starting up");
+    let model = Model::new("african_head.obj");
     
     let mut canvas = canvas::Canvas::new(100, 100);
     canvas.line(13, 20, 80, 40, WHITE);
