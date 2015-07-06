@@ -11,4 +11,4 @@ cargo run
 
 cargo clean
 
-set RUST_LOG=rust_project=debug
+declare -x RUST_LOG="rust_project=debug"
