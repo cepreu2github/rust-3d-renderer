@@ -10,7 +10,7 @@ use std::mem;
 pub struct Canvas {
     renderer: Renderer<'static>,
     sdl_context: Sdl,
-    xsize: u32,
+    //xsize: u32,
     ysize: u32,
 }
 
@@ -29,7 +29,7 @@ impl Canvas {
         Canvas { 
             renderer: renderer,
             sdl_context: sdl_context,
-            xsize: x,
+            //xsize: x,
             ysize: y,
         }
     }

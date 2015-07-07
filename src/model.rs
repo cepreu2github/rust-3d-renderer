@@ -22,18 +22,16 @@ impl Model {
                 vertices.push(Vector3D::new(words[1].parse().unwrap(), 
                                             words[2].parse().unwrap(),
                                             words[3].parse().unwrap()));
-                debug!("Readed vertex: {}", line);
+                debug!("readed vertex: {}", vertices.last().unwrap());
             } else if line.starts_with("f ") {
                 let mut face: [i32; 3] = [-1, -1, -1];
                 let words: Vec<&str> = line.split_whitespace().collect();
                 for i in 0..3 {
-                    for num in words[i+1].split("/"){
-                        face[i] = num.parse().unwrap();
-                        face[i] -= 1; // in wavefront obj all indices start at 1, not zero
-                        break;
-                    }
-                    debug!("Face[{}] = {}", i, face[i]);
+                    face[i] = words[i+1].split("/").next().unwrap().parse().unwrap();
+                    face[i] -= 1;
+                    debug!("face[{}] = {}", i, face[i]);
                 }
+                faces.push(face);
             }
         }
         Model {

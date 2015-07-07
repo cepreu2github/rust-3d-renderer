@@ -1,4 +1,6 @@
 // Copyright (C) Cepreu <cepreu.mail@gmail.com> under GPLv2 and higher
+use std::fmt;
+
 pub struct Vector3D {
     pub x: f32,
     pub y: f32,
@@ -14,4 +16,8 @@ impl Vector3D {
         }
     }
 }
-
+impl fmt::Display for Vector3D {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "({},{},{})", self.x, self.y, self.z)
+    }
+}

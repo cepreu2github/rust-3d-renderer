@@ -11,8 +11,8 @@ mod model;
 use model::Model;
 
 const WHITE: u32 = 0xFFFFFF;
-const RED: u32 = 0xFF0000;
-const BLUE: u32 = 0x0000FF;
+//const RED: u32 = 0xFF0000;
+//const BLUE: u32 = 0x0000FF;
 const WIDTH: u32 = 800;
 const HEIGHT: u32 = 800;
 
@@ -29,9 +29,9 @@ fn main() {
     info!("starting up");
     let model = Model::new("african_head.obj");
     let mut canvas = canvas::Canvas::new(WIDTH, HEIGHT);
-    debug!("Drawing wireframe...");
+    debug!("drawing wireframe");
     for face in model.faces {
-        debug!("Processing face:");
+        debug!("processing face:");
         debug!("({}, {}, {})", face[0], face[1], face[2]);
         for j in 0..3 {
             let v0 = &model.vertices[face[j] as usize];
@@ -40,9 +40,10 @@ fn main() {
             let y0 = ((v0.y+1.)*HEIGHT as f32/2.) as i32;
             let x1 = ((v1.x+1.)*WIDTH as f32/2.) as i32;
             let y1 = ((v1.y+1.)*HEIGHT as f32/2.) as i32;
-            debug!("Drawing line ({}, {}) - ({}, {})", x0, y0, x1, y1); 
+            debug!("drawing line ({}, {}) - ({}, {})", x0, y0, x1, y1); 
             canvas.line(x0, y0, x1, y1, WHITE);
         }
     }
+    info!("waiting for ESC");
     canvas.wait_for_esc();
 }
