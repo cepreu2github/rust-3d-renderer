@@ -1,15 +1,15 @@
 // Copyright (C) Cepreu <cepreu.mail@gmail.com> under GPLv2 and higher
-use sdl2;
-use sdl2::keyboard::Keycode;
-use sdl2::Sdl;
-use sdl2::render::Renderer;
-use sdl2::pixels::PixelFormatEnum;
-use sdl2::rect::Rect;
+//use sdl2;
+//use sdl2::keyboard::Keycode;
+//use sdl2::Sdl;
+//use sdl2::render::Renderer;
+//use sdl2::pixels::PixelFormatEnum;
+//use sdl2::rect::Rect;
 use std::mem;
 
 pub struct Canvas {
-    sdl_context: Sdl,
-    renderer: Renderer<'static>,
+    //sdl_context: Sdl,
+    //renderer: Renderer<'static>,
     canvas: Vec<Vec<u32>>,
     xsize: usize,
     ysize: usize,
@@ -17,7 +17,7 @@ pub struct Canvas {
 
 impl Canvas {
     pub fn new(x: usize, y: usize) -> Canvas {
-        let sdl_context = sdl2::init().video().unwrap();
+        /*let sdl_context = sdl2::init().video().unwrap();
 
         let window = sdl_context.window("rust-3d-renderer", x as u32, y as u32)
             .position_centered()
@@ -25,18 +25,18 @@ impl Canvas {
             .build()
             .unwrap();
 
-        let renderer = window.renderer().build().unwrap();
+        let renderer = window.renderer().build().unwrap();*/
 
         Canvas {
-            sdl_context: sdl_context,
-            renderer: renderer,
+            //sdl_context: sdl_context,
+            //renderer: renderer,
             canvas: vec![vec![0;y];x], 
             xsize: x,
             ysize: y,
         }
     }
 
-    pub fn show(&mut self) {
+    /*pub fn show(&mut self) {
         let mut texture = self.renderer.create_texture_streaming(PixelFormatEnum::RGB24, 
                                        (self.xsize as u32, self.ysize as u32)).unwrap();
         texture.with_lock(None, |buffer: &mut [u8], pitch: usize| {
@@ -55,9 +55,9 @@ impl Canvas {
         self.renderer.copy(&texture, None, Some(Rect::new_unwrap(0, 0, 
                                                 self.xsize as u32, self.ysize as u32)));
         self.renderer.present();
-    }
+    }*/
     
-    pub fn wait_for_esc(&mut self) {
+    /*pub fn wait_for_esc(&mut self) {
 
         let mut running = true;
 
@@ -73,7 +73,7 @@ impl Canvas {
                 }
             }
         }
-    }
+    }*/
 
     
     // ============================================ BELOW IS PLATFORM INDEPENDENT CODE
