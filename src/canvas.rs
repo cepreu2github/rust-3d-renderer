@@ -1,42 +1,59 @@
 // Copyright (C) Cepreu <cepreu.mail@gmail.com> under GPLv2 and higher
 use sdl2;
 use sdl2::keyboard::Keycode;
-use sdl2::render::Renderer;
 use sdl2::Sdl;
-use sdl2::pixels::Color;
-use sdl2::rect::Point;
+use sdl2::render::Renderer;
+use sdl2::pixels::PixelFormatEnum;
+use sdl2::rect::Rect;
 use std::mem;
 
 pub struct Canvas {
-    renderer: Renderer<'static>,
     sdl_context: Sdl,
-    //xsize: u32,
-    ysize: u32,
+    renderer: Renderer<'static>,
+    canvas: Vec<Vec<u32>>,
+    xsize: usize,
+    ysize: usize,
 }
 
 impl Canvas {
-    pub fn new(x: u32, y: u32) -> Canvas {
+    pub fn new(x: usize, y: usize) -> Canvas {
         let sdl_context = sdl2::init().video().unwrap();
 
-        let window = sdl_context.window("rust-3d-renderer", x, y)
+        let window = sdl_context.window("rust-3d-renderer", x as u32, y as u32)
             .position_centered()
             .opengl()
             .build()
             .unwrap();
 
         let renderer = window.renderer().build().unwrap();
-       
-        Canvas { 
-            renderer: renderer,
+
+        Canvas {
             sdl_context: sdl_context,
-            //xsize: x,
+            renderer: renderer,
+            canvas: vec![vec![0;y];x], 
+            xsize: x,
             ysize: y,
         }
     }
-    
-    pub fn set(&mut self, x: i32, y: i32, color: u32) {
-        self.renderer.set_draw_color(Color::RGB((color >> (8*2)) as u8, (color >> (8*1)) as u8, color as u8));
-        self.renderer.draw_point(Point::new(x, self.ysize as i32 - y));
+
+    pub fn show(&mut self) {
+        let mut texture = self.renderer.create_texture_streaming(PixelFormatEnum::RGB24, 
+                                       (self.xsize as u32, self.ysize as u32)).unwrap();
+        texture.with_lock(None, |buffer: &mut [u8], pitch: usize| {
+            for y in (0..self.ysize) {
+                for x in (0..self.xsize) {
+                    let offset = y*pitch + x*3;
+                    let color = self.canvas[x][self.ysize - y - 1];
+                    buffer[offset + 0] = (color >> (8*2)) as u8;
+                    buffer[offset + 1] = (color >> (8*1)) as u8;
+                    buffer[offset + 2] = color as u8;
+                }
+            }
+        }).unwrap();
+
+        self.renderer.clear();
+        self.renderer.copy(&texture, None, Some(Rect::new_unwrap(0, 0, 
+                                                self.xsize as u32, self.ysize as u32)));
         self.renderer.present();
     }
     
@@ -60,6 +77,16 @@ impl Canvas {
 
     
     // ============================================ BELOW IS PLATFORM INDEPENDENT CODE
+
+    pub fn set(&mut self, x: i32, y: i32, color: u32) {
+        if x < 0 || y < 0 {
+            return;
+        }
+        if x >= self.xsize as i32 || y >= self.ysize as i32{
+            return; 
+        }
+        self.canvas[x as usize][y as usize] = color;
+    }
 
     pub fn line(&mut self, mut x0: i32, mut y0: i32, mut x1: i32, mut y1: i32, color: u32) {
         let mut steep = false;

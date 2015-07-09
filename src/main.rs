@@ -13,8 +13,8 @@ use model::Model;
 const WHITE: u32 = 0xFFFFFF;
 //const RED: u32 = 0xFF0000;
 //const BLUE: u32 = 0x0000FF;
-const WIDTH: u32 = 700;
-const HEIGHT: u32 = 700;
+const WIDTH: usize = 700;
+const HEIGHT: usize = 700;
 
 #[test]
 fn test_line() {
@@ -44,6 +44,8 @@ fn main() {
             canvas.line(x0, y0, x1, y1, WHITE);
         }
     }
+    info!("drawing result");
+    canvas.show();
     info!("waiting for ESC");
     canvas.wait_for_esc();
 }
