@@ -1,11 +1,11 @@
 // Copyright (C) Cepreu <cepreu.mail@gmail.com> under GPLv2 and higher
-use geometry::Vector3D;
+use geometry::Point3D;
 use std::io::{BufReader,BufRead};
 use std::fs::File;
 use std::path::Path;
 
 pub struct Model {
-    pub vertices: Vec<Vector3D>,
+    pub vertices: Vec<Point3D>,
     pub faces : Vec<[i32; 3]>,
 }
 
@@ -19,7 +19,7 @@ impl Model {
             let line = line.unwrap();
             if line.starts_with("v ") {
                 let words: Vec<&str> = line.split_whitespace().collect();
-                vertices.push(Vector3D::new(words[1].parse().unwrap(), 
+                vertices.push(Point3D::new(words[1].parse().unwrap(), 
                                             words[2].parse().unwrap(),
                                             words[3].parse().unwrap()));
                 debug!("readed vertex: {}", vertices.last().unwrap());
