@@ -9,8 +9,8 @@ mod canvas;
 mod geometry;
 mod model;
 
-use rand::Rng;
 use model::Model;
+use geometry::Vector3D;
 
 //const WHITE: u32 = 0xFFFFFF;
 //const RED: u32 = 0xFF0000;
@@ -35,23 +35,40 @@ fn test_triangle() {
     canvas.triangle(180, 150, 120, 160, 130, 180, GREEN);
 }
 
+fn get_gray(intensity: f32) -> u32 {
+    debug!("intensity is {}", intensity);
+    let mut result = (255.0*intensity) as u32;
+    result += (255.0*intensity) as u32*256;
+    result += (255.0*intensity) as u32*256*256;
+    debug!("result is {:X}", result);
+    return result;
+}
+
 fn main() {
     env_logger::init().unwrap();
     info!("starting up");
+    let light_direction = Vector3D::new(0.0, 0.0, -1.0);
     let model = Model::new("african_head.obj");
     let mut canvas = canvas::Canvas::new(WIDTH, HEIGHT);
-    debug!("drawing wireframe");
+    debug!("drawing model");
     for face in model.faces {
         debug!("processing face:");
         debug!("({}, {}, {})", face[0], face[1], face[2]);
         let mut p: [[i32; 2]; 3] = [[0; 2]; 3];
+        let mut world_p: [Vector3D; 3] = [Vector3D::new(0.0, 0.0, 0.0); 3];
         for j in 0..3 {
-            let x = model.vertices[face[j] as usize].x;
-            let y = model.vertices[face[j] as usize].y;
+            world_p[j] = model.vertices[face[j] as usize];
+            let x = world_p[j].x;
+            let y = world_p[j].y;
             p[j][0] = ((x+1.)*WIDTH as f32/2.) as i32;
             p[j][1] = ((y+1.)*HEIGHT as f32/2.) as i32;
         }
-        canvas.triangle(p[0][0], p[0][1], p[1][0], p[1][1], p[2][0], p[2][1], rand::thread_rng().gen_range(0x000000, 0xFFFFFF));
+        let n = (world_p[2]-world_p[0])^(world_p[1]-world_p[0]);
+        let n = n.normalized(1.0);
+        let intensity = n*light_direction;
+        if intensity>0.0 {
+            canvas.triangle(p[0][0], p[0][1], p[1][0], p[1][1], p[2][0], p[2][1], get_gray(intensity));
+        }
     }
     info!("drawing result");
     canvas.show();
