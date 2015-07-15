@@ -1,4 +1,5 @@
 // Copyright (C) Cepreu <cepreu.mail@gmail.com> under GPLv2 and higher
+use std;
 use sdl2;
 use sdl2::keyboard::Keycode;
 use sdl2::Sdl;
@@ -6,11 +7,13 @@ use sdl2::render::Renderer;
 use sdl2::pixels::PixelFormatEnum;
 use sdl2::rect::Rect;
 use std::mem;
+use geometry::Vector3D;
 
 pub struct Canvas {
     sdl_context: Sdl,
     renderer: Renderer<'static>,
     canvas: Vec<Vec<u32>>,
+    zbuffer: Vec<Vec<i32>>,
     xsize: usize,
     ysize: usize,
 }
@@ -30,7 +33,8 @@ impl Canvas {
         Canvas {
             sdl_context: sdl_context,
             renderer: renderer,
-            canvas: vec![vec![0;y];x], 
+            canvas: vec![vec![0;y];x],
+            zbuffer: vec![vec![std::i32::MIN; y]; x],
             xsize: x,
             ysize: y,
         }
@@ -88,74 +92,38 @@ impl Canvas {
         self.canvas[x as usize][y as usize] = color;
     }
 
-    pub fn line(&mut self, mut x0: i32, mut y0: i32, mut x1: i32, mut y1: i32, color: u32) {
-        let mut steep = false;
-        if (x0-x1).abs() < (y0-y1).abs() {
-            mem::swap(&mut x0, &mut y0);
-            mem::swap(&mut x1, &mut y1);
-            steep = true;
-        }
-        if x0>x1 {
-            mem::swap(&mut x0, &mut x1);
-            mem::swap(&mut y0, &mut y1);
-        }
-        let dx = x1-x0;
-        let dy = y1-y0;
-        let derror2 = dy.abs()*2;
-        let mut error2 = 0;
-        let mut y = y0;
-        for x in x0..x1+1 {
-            if steep {
-                self.set(y, x, color);
-            } else {
-                self.set(x, y, color);
-            }
-            error2 += derror2;
-
-            if error2 > dx {
-                y += if y1>y0 { 1 } else { -1 };
-                error2 -= dx*2;
-            }
-        }
-    }
-
-    pub fn triangle(&mut self, mut x0: i32, mut y0: i32, mut x1: i32, mut y1: i32,
-                     mut x2: i32, mut y2: i32, color: u32) {
-        self.line(x0, y0, x1, y1, color);
-        self.line(x1, y1, x2, y2, color);
-        self.line(x2, y2, x0, y0, color);
-        if y0==y1 && y0==y2 {
+    pub fn triangle(&mut self, mut p0: Vector3D<i32>, mut p1: Vector3D<i32>, mut p2: Vector3D<i32>, color: u32) {
+        if p0.y==p1.y && p0.y==p2.y {
             return; // i dont care about degenerate triangles
         }
         // sort the vertices, t0, t1, t2 lower-to-upper (bubblesort yay!)
-        if y0 > y1 {
-            mem::swap(&mut x0, &mut x1);
-            mem::swap(&mut y0, &mut y1);
+        if p0.y > p1.y {
+            mem::swap(&mut p0, &mut p1);
         }
-        if y0 > y2 {
-            mem::swap(&mut x0, &mut x2);
-            mem::swap(&mut y0, &mut y2);
+        if p0.y > p2.y {
+            mem::swap(&mut p0, &mut p2);
         }
-        if y1 > y2 {
-            mem::swap(&mut x1, &mut x2);
-            mem::swap(&mut y1, &mut y2);
+        if p1.y > p2.y {
+            mem::swap(&mut p1, &mut p2);
         }
-        let total_height = y2 - y0;
+        let total_height = p2.y - p0.y;
         for i in 0..total_height {
-            let second_half = i > y1 - y0 || y1 == y0;
-            let segment_height = if second_half { y2 - y1 } else { y1 - y0 };
+            let second_half = i > p1.y - p0.y || p1.y == p0.y;
+            let segment_height = if second_half { p2.y - p1.y } else { p1.y - p0.y };
             let alpha = i as f32/total_height as f32;
-            let beta  = (i - if second_half { y1 - y0 } else { 0 }) as f32/segment_height as f32; // be careful: with above conditions no division by zero here
-            let mut ax = (x0 as f32 + (x2-x0) as f32*alpha) as i32;
-            let mut ay = (y0 as f32 + (y2-y0) as f32*alpha) as i32;
-            let mut bx = (if second_half { x1 as f32 + (x2-x1) as f32*beta } else { x0 as f32 + (x1-x0) as f32*beta }) as i32;
-            let mut by = (if second_half { y1 as f32 + (y2-y1) as f32*beta } else { y0 as f32 + (y1-y0) as f32*beta }) as i32;
-            if ax>bx{
-                mem::swap(&mut ax, &mut bx);
-                mem::swap(&mut ay, &mut by);
+            let beta  = (i - if second_half { p1.y - p0.y } else { 0 }) as f32/segment_height as f32; // be careful: with above conditions no division by zero here
+            let mut a = p0.to::<f32>() + (p2-p0).to::<f32>()*alpha;
+            let mut b = if second_half { p1.to::<f32>() + (p2-p1).to::<f32>()*beta } else { p0.to::<f32>() + (p1-p0).to::<f32>()*beta };
+            if a.x>b.x{
+                mem::swap(&mut a, &mut b);
             }
-            for j in ax..bx+1 {
-                self.set(j, y0+i, color); // attention, due to int casts t0.y+i != A.y
+            for j in a.x as i32..b.x as i32+1 {
+                let phi = if b.x == a.x { 1. } else { (j as f32 - a.x)/(b.x - a.x) };
+                let p = (a + (b-a)*phi).to::<i32>();
+                if self.zbuffer[p.x as usize][p.y as usize]<p.z {
+                    self.zbuffer[p.x as usize][p.y as usize] = p.z;
+                    self.set(p.x, p.y, color);
+                }
             }
         }
     }

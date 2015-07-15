@@ -5,7 +5,7 @@ use std::fs::File;
 use std::path::Path;
 
 pub struct Model {
-    pub vertices: Vec<Vector3D>,
+    pub vertices: Vec<Vector3D<f32>>,
     pub faces : Vec<[i32; 3]>,
 }
 

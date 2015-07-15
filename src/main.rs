@@ -4,6 +4,7 @@ extern crate sdl2;
 extern crate log;
 extern crate env_logger;
 extern crate rand;
+extern crate num;
 
 mod canvas;
 mod geometry;
@@ -18,6 +19,7 @@ use geometry::Vector3D;
 //const GREEN: u32 = 0x00FF00;
 const WIDTH: usize = 700;
 const HEIGHT: usize = 700;
+const DEPTH: usize = 255;
 
 #[test]
 fn test_line() {
@@ -54,20 +56,19 @@ fn main() {
     for face in model.faces {
         debug!("processing face:");
         debug!("({}, {}, {})", face[0], face[1], face[2]);
-        let mut p: [[i32; 2]; 3] = [[0; 2]; 3];
-        let mut world_p: [Vector3D; 3] = [Vector3D::new(0.0, 0.0, 0.0); 3];
+        let mut p: [Vector3D<i32>; 3] = [Vector3D::new(0, 0, 0); 3];
+        let mut world_p: [Vector3D<f32>; 3] = [Vector3D::new(0.0, 0.0, 0.0); 3];
         for j in 0..3 {
             world_p[j] = model.vertices[face[j] as usize];
-            let x = world_p[j].x;
-            let y = world_p[j].y;
-            p[j][0] = ((x+1.)*WIDTH as f32/2.) as i32;
-            p[j][1] = ((y+1.)*HEIGHT as f32/2.) as i32;
+            p[j].x = ((world_p[j].x+1.)*WIDTH as f32/2.) as i32;
+            p[j].y = ((world_p[j].y+1.)*HEIGHT as f32/2.) as i32;
+            p[j].z = ((world_p[j].z+1.)*DEPTH as f32/2.) as i32;
         }
         let n = (world_p[2]-world_p[0])^(world_p[1]-world_p[0]);
         let n = n.normalized(1.0);
         let intensity = n*light_direction;
         if intensity>0.0 {
-            canvas.triangle(p[0][0], p[0][1], p[1][0], p[1][1], p[2][0], p[2][1], get_gray(intensity));
+            canvas.triangle(p[0], p[1], p[2], get_gray(intensity));
         }
     }
     info!("drawing result");
