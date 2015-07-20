@@ -50,7 +50,7 @@ fn main() {
     env_logger::init().unwrap();
     info!("starting up");
     let light_direction = Vector3D::new(0.0, 0.0, -1.0);
-    let model = Model::new("african_head.obj");
+    let model = Model::new("obj_african/african_head.obj");
     let mut canvas = canvas::Canvas::new(WIDTH, HEIGHT);
     debug!("drawing model");
     for face in model.faces {
