@@ -8,6 +8,7 @@ extern crate num;
 
 mod canvas;
 mod sdlcanvas;
+mod tgacanvas;
 mod geometry;
 mod model;
 
@@ -36,6 +37,7 @@ fn get_gray(intensity: f32) -> u32 {
 fn main() {
     env_logger::init().unwrap();
     info!("starting up");
+    
     let light_direction = Vector3D::new(0.0, 0.0, -1.0);
     let model = Model::new("obj_african/african_head.obj");
     let mut canvas: SdlCanvas = Canvas::new(WIDTH, HEIGHT);
@@ -59,7 +61,7 @@ fn main() {
         }
     }
     info!("drawing result");
-    canvas.show();
+    canvas.out();
     info!("waiting for ESC");
     canvas.wait_for_enter();
 }

@@ -39,7 +39,11 @@ impl Canvas for SdlCanvas {
         }
     }
 
-    fn show(&mut self) {
+    fn read(filename: &str) -> SdlCanvas{
+        panic!("Not implemented: SdlCanvas can't be readed from {}", filename);
+    }
+
+    fn out(&mut self) {
         let mut texture = self.renderer.create_texture_streaming(PixelFormatEnum::RGB24, 
                                        (self.xsize as u32, self.ysize as u32)).unwrap();
         texture.with_lock(None, |buffer: &mut [u8], pitch: usize| {

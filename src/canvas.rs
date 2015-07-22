@@ -9,7 +9,8 @@ pub trait Canvas {
     fn ysize(&self) -> usize;
 
     fn new(x: usize, y: usize) -> Self;
-    fn show(&mut self);
+    fn read(filename: &str) -> Self;
+    fn out(&mut self);
     fn wait_for_enter(&mut self); 
 
     fn set(&mut self, x: i32, y: i32, color: u32) {
