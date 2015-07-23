@@ -23,13 +23,15 @@ impl Canvas for TgaCanvas {
         }
     }
 
-    fn read(filename: &str) -> TgaCanvas{
-        let path = Path::new(filename);
+    fn read(path: &str) -> TgaCanvas{
+        let path = Path::new(path);
         let mut file = File::open(&path).unwrap();
         let mut header_bytes: [u8; HEADERSIZE] = [0; HEADERSIZE];
         file.read(&mut header_bytes);
         let header = unsafe { mem::transmute::<[u8; HEADERSIZE], TgaHeader>(header_bytes) };
         debug!("read header: width = {}, height = {}", header.width, header.height);
+        let bytespp = header.bitsperpixel>>3;
+        
         // проверить количество бит на пиксель и рассчитать размер буфера
         // если рле
             // прочитать рле
