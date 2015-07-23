@@ -1,6 +1,10 @@
 // Copyright (C) Cepreu <cepreu.mail@gmail.com> under GPLv2 and higher
 use std;
+use std::mem;
 use canvas::Canvas;
+use std::fs::File;
+use std::io::Read;
+use std::path::Path;
 
 pub struct TgaCanvas {
     canvas: Vec<Vec<u32>>,
@@ -20,7 +24,18 @@ impl Canvas for TgaCanvas {
     }
 
     fn read(filename: &str) -> TgaCanvas{
-        panic!("Not implemented: working on it {}", filename);
+        let path = Path::new(filename);
+        let mut file = File::open(&path).unwrap();
+        let mut header_bytes: [u8; HEADERSIZE] = [0; HEADERSIZE];
+        file.read(&mut header_bytes);
+        let header = unsafe { mem::transmute::<[u8; HEADERSIZE], TgaHeader>(header_bytes) };
+        debug!("read header: width = {}, height = {}", header.width, header.height);
+        // проверить количество бит на пиксель и рассчитать размер буфера
+        // если рле
+            // прочитать рле
+            // считать содержимое файла в буфер
+        
+        panic!("Not implemented");
     }
 
     fn out(&mut self) {
@@ -45,6 +60,7 @@ impl Canvas for TgaCanvas {
     }
 }
 
+const HEADERSIZE: usize = 18; // 18 = sizeof(TgaHeader)
 #[repr(C, packed)]
 struct TgaHeader {
 	idlength: i8,

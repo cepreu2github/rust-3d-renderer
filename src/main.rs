@@ -15,6 +15,7 @@ mod model;
 use model::Model;
 use geometry::Vector3D;
 use sdlcanvas::SdlCanvas;
+use tgacanvas::TgaCanvas;
 use canvas::Canvas;
 
 //const WHITE: u32 = 0xFFFFFF;
@@ -37,6 +38,10 @@ fn get_gray(intensity: f32) -> u32 {
 fn main() {
     env_logger::init().unwrap();
     info!("starting up");
+    
+    let mut tga: TgaCanvas = Canvas::read("obj_african/african_head_diffuse.tga");
+    
+    panic!("Not going futher");
     
     let light_direction = Vector3D::new(0.0, 0.0, -1.0);
     let model = Model::new("obj_african/african_head.obj");
