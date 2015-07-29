@@ -29,15 +29,25 @@ impl Canvas for TgaCanvas {
         let mut header_bytes: [u8; HEADERSIZE] = [0; HEADERSIZE];
         file.read(&mut header_bytes);
         let header = unsafe { mem::transmute::<[u8; HEADERSIZE], TgaHeader>(header_bytes) };
-        debug!("read header: width = {}, height = {}", header.width, header.height);
+        let xsize = header.width as usize;
+        let ysize = header.height as usize;
+        debug!("read header: width = {}, height = {}", xsize, ysize);
         let bytespp = header.bitsperpixel>>3;
-        
+        let canvas = vec![vec![0;ysize];xsize];
+        let nbytes = bytespp as usize*xsize*ysize;
+        let mut raw_data = Vec::new();
+        file.read_to_end(&mut raw_data);
         // проверить количество бит на пиксель и рассчитать размер буфера
         // если рле
             // прочитать рле
             // считать содержимое файла в буфер
         
-        panic!("Not implemented");
+        TgaCanvas {
+            canvas: canvas,
+            zbuffer: vec![vec![std::i32::MIN; ysize]; xsize],
+            xsize: xsize,
+            ysize: ysize,
+        }
     }
 
     fn out(&mut self) {
