@@ -11,7 +11,7 @@ use canvas::Canvas;
 pub struct SdlCanvas {
     sdl_context: Sdl,
     renderer: Renderer<'static>,
-    canvas: Vec<Vec<u32>>,
+    pub canvas: Vec<Vec<u32>>,
     zbuffer: Vec<Vec<i32>>,
     xsize: usize,
     ysize: usize,
@@ -51,6 +51,7 @@ impl Canvas for SdlCanvas {
                 for x in (0..self.xsize) {
                     let offset = y*pitch + x*3;
                     let color = self.canvas[x][self.ysize - y - 1];
+                    //debug!("color={}", color);
                     buffer[offset + 0] = (color >> (8*2)) as u8;
                     buffer[offset + 1] = (color >> (8*1)) as u8;
                     buffer[offset + 2] = color as u8;

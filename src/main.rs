@@ -39,8 +39,12 @@ fn main() {
     env_logger::init().unwrap();
     info!("starting up");
     
-    let tga: TgaCanvas = Canvas::read("obj_african/african_head_diffuse.tga");
-    if tga.xsize()>0 {
+    let tga: TgaCanvas = Canvas::read("/home/user/colors.tga");
+    let mut canvas: SdlCanvas = Canvas::new(tga.xsize(), tga.ysize());
+    canvas.canvas = tga.canvas;
+    canvas.out();
+    canvas.wait_for_enter();
+    if canvas.xsize()>0 {
         panic!("Not going futher");
     }
     
