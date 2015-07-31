@@ -39,7 +39,7 @@ fn main() {
     env_logger::init().unwrap();
     info!("starting up");
     
-    let tga: TgaCanvas = Canvas::read("/home/user/colors.tga");
+    let tga: TgaCanvas = Canvas::read("/home/user/luxfon.tga");
     let mut canvas: SdlCanvas = Canvas::new(tga.xsize(), tga.ysize());
     canvas.canvas = tga.canvas;
     canvas.out();
@@ -51,7 +51,7 @@ fn main() {
     let light_direction = Vector3D::new(0.0, 0.0, -1.0);
     let model = Model::new("obj_african/african_head.obj");
     let mut canvas: SdlCanvas = Canvas::new(WIDTH, HEIGHT);
-    debug!("drawing model");
+    info!("drawing model");
     for face in model.faces {
         debug!("processing face:");
         debug!("({}, {}, {})", face[0], face[1], face[2]);
