@@ -14,7 +14,6 @@ mod model;
 
 use model::Model;
 use geometry::Vector3D;
-use sdlcanvas::SdlCanvas;
 use tgacanvas::TgaCanvas;
 use canvas::Canvas;
 
@@ -38,19 +37,9 @@ fn get_gray(intensity: f32) -> u32 {
 fn main() {
     env_logger::init().unwrap();
     info!("starting up");
-    
-    let tga: TgaCanvas = Canvas::read("/home/user/luxfon.tga");
-    let mut canvas: SdlCanvas = Canvas::new(tga.xsize(), tga.ysize());
-    canvas.canvas = tga.canvas;
-    canvas.out();
-    canvas.wait_for_enter();
-    if canvas.xsize()>0 {
-        panic!("Not going futher");
-    }
-    
     let light_direction = Vector3D::new(0.0, 0.0, -1.0);
     let model = Model::new("obj_african/african_head.obj");
-    let mut canvas: SdlCanvas = Canvas::new(WIDTH, HEIGHT);
+    let mut canvas: TgaCanvas = Canvas::new(WIDTH, HEIGHT);
     info!("drawing model");
     for face in model.faces {
         debug!("processing face:");
@@ -72,6 +61,6 @@ fn main() {
     }
     info!("drawing result");
     canvas.out();
-    info!("waiting for ESC");
+    info!("waiting for Enter");
     canvas.wait_for_enter();
 }

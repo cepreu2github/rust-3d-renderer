@@ -11,7 +11,7 @@ use canvas::Canvas;
 pub struct SdlCanvas {
     sdl_context: Sdl,
     renderer: Renderer<'static>,
-    pub canvas: Vec<Vec<u32>>,
+    canvas: Vec<Vec<u32>>,
     zbuffer: Vec<Vec<i32>>,
     xsize: usize,
     ysize: usize,
