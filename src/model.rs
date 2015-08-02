@@ -6,9 +6,12 @@ use std::path::Path;
 
 pub struct Model {
     pub vertices: Vec<Vector3D<f32>>,
-    pub faces : Vec<[i32; 3]>,
+    pub faces : Vec<[i32; 3]>, // Vec<[Vector3D, 3]>
+    // uv : Vec<[f32; 2]>
+    // diffusemap
 }
 
+// Изменения в модели: сохраняем из "f " все 3 числа, сохраняем "vt " и текстуру _diffuse
 impl Model {
     pub fn new(file_path: &str) -> Model {
         let path = Path::new(file_path);

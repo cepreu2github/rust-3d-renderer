@@ -14,7 +14,7 @@ mod model;
 
 use model::Model;
 use geometry::Vector3D;
-use tgacanvas::TgaCanvas;
+use sdlcanvas::SdlCanvas;
 use canvas::Canvas;
 
 //const WHITE: u32 = 0xFFFFFF;
@@ -39,7 +39,7 @@ fn main() {
     info!("starting up");
     let light_direction = Vector3D::new(0.0, 0.0, -1.0);
     let model = Model::new("obj_african/african_head.obj");
-    let mut canvas: TgaCanvas = Canvas::new(WIDTH, HEIGHT);
+    let mut canvas: SdlCanvas = Canvas::new(WIDTH, HEIGHT);
     info!("drawing model");
     for face in model.faces {
         debug!("processing face:");
