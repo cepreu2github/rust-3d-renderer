@@ -51,7 +51,7 @@ pub trait Canvas {
             for j in a.x as i32..b.x as i32+1 {
                 let phi = if b.x == a.x { 1. } else { (j as f32 - a.x)/(b.x - a.x) };
                 let p = (a + (b-a)*phi).to::<i32>();
-                if self.zbuffer()[p.x as usize][p.y as usize]<p.z {
+                if self.zbuffer()[p.x as usize][p.y as usize]<p.z-1 { // -1 is hack, quick and dirty round-up problems solution
                     self.zbuffer()[p.x as usize][p.y as usize] = p.z;
                     self.set(p.x, p.y, color);
                 }

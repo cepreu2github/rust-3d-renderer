@@ -13,7 +13,6 @@ pub struct Model {
     pub diffusemap : TgaCanvas,
 }
 
-// Изменения в модели: сохраняем "vt " и текстуру _diffuse
 impl Model {
     pub fn new(file_path: &str) -> Model {
         let path = Path::new(file_path);
@@ -56,5 +55,11 @@ impl Model {
             diffusemap: TgaCanvas::read(texture_path.split("*").next().unwrap()),
         }
     }
+    
+    /*Vec2i Model::uv(int iface, int nvert) {
+        int idx = faces_[iface][nvert][1];
+        return Vec2i(uv_[idx].x*diffusemap_.get_width(), uv_[idx].y*diffusemap_.get_height());
+    }*/
+
 }
 
