@@ -43,11 +43,11 @@ fn main() {
     info!("drawing model");
     for face in model.faces {
         debug!("processing face:");
-        debug!("({}, {}, {})", face[0], face[1], face[2]);
+        debug!("({}, {}, {})", face[0][0], face[1][0], face[2][0]);
         let mut p: [Vector3D<i32>; 3] = [Vector3D::new(0, 0, 0); 3];
         let mut world_p: [Vector3D<f32>; 3] = [Vector3D::new(0.0, 0.0, 0.0); 3];
         for j in 0..3 {
-            world_p[j] = model.vertices[face[j] as usize];
+            world_p[j] = model.vertices[face[j][0] as usize];
             p[j].x = ((world_p[j].x+1.)*WIDTH as f32/2.) as i32;
             p[j].y = ((world_p[j].y+1.)*HEIGHT as f32/2.) as i32;
             p[j].z = ((world_p[j].z+1.)*DEPTH as f32/2.) as i32;
