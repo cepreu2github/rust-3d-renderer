@@ -25,23 +25,15 @@ const WIDTH: usize = 700;
 const HEIGHT: usize = 700;
 const DEPTH: usize = 255;
 
-fn get_gray(intensity: f32) -> u32 {
-    debug!("intensity is {}", intensity);
-    let mut result = (255.0*intensity) as u32;
-    result += (255.0*intensity) as u32*256;
-    result += (255.0*intensity) as u32*256*256;
-    debug!("result is {:X}", result);
-    return result;
-}
-
 fn main() {
     env_logger::init().unwrap();
     info!("starting up");
     let light_direction = Vector3D::new(0.0, 0.0, -1.0);
-    let model = Model::new("obj_african/african_head.obj");
+    let mut model = Model::new("obj_african/african_head.obj");
     let mut canvas: SdlCanvas = Canvas::new(WIDTH, HEIGHT);
     info!("drawing model");
-    for face in model.faces {
+    for i in 0..model.faces.len() {
+        let face = model.faces[i];
         debug!("processing face:");
         debug!("({}, {}, {})", face[0][0], face[1][0], face[2][0]);
         let mut p: [Vector3D<i32>; 3] = [Vector3D::new(0, 0, 0); 3];
@@ -56,7 +48,7 @@ fn main() {
         let n = n.normalized(1.0);
         let intensity = n*light_direction;
         if intensity>0.0 {
-            canvas.triangle(p[0], p[1], p[2], get_gray(intensity));
+            canvas.triangle(p[0], p[1], p[2], model.uv(i, 0), model.uv(i, 1), model.uv(i, 2), intensity, &mut model.diffusemap);
         }
     }
     info!("drawing result");

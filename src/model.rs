@@ -56,10 +56,10 @@ impl Model {
         }
     }
     
-    /*Vec2i Model::uv(int iface, int nvert) {
-        int idx = faces_[iface][nvert][1];
-        return Vec2i(uv_[idx].x*diffusemap_.get_width(), uv_[idx].y*diffusemap_.get_height());
-    }*/
+    pub fn uv(&self, iface: usize, nvert: usize) -> Vector3D<i32> {
+        let idx = self.faces[iface][nvert][1] as usize;
+        return Vector3D::new(self.uv[idx][0] * self.diffusemap.xsize() as f32, self.uv[idx][1] * self.diffusemap.ysize() as f32, 0.0).to::<i32>();
+    }
 
 }
 
