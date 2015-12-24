@@ -85,7 +85,7 @@ impl Matrix {
         Matrix {
             rows: rows,
             cols: cols,
-            elems: vec![0.0; (rows*cols) as usize],
+            elems: vec![0.0; (cols*rows) as usize],
         }
     }
     pub fn rows(&self) -> u32{
@@ -93,6 +93,13 @@ impl Matrix {
     }
     pub fn cols(&self) -> u32{
         return self.cols;
+    }
+    pub fn identity(dimensions: u32) -> Matrix{
+        let result = Matrix::new(dimensions, dimensions);
+        for i in 0..dimensions {
+            result[i][i] = 1.0;
+        }
+        return result;
     }
 
 }
