@@ -74,3 +74,25 @@ impl<T: Mul<Output = T> + Sub<Output = T> + Copy> BitXor for Vector3D<T> {
     }
 }
 
+pub struct Matrix {
+    rows: u32,
+    cols: u32,
+    elems: Vec<f32>,
+}
+
+impl Matrix {
+    pub fn new(rows: u32, cols: u32) -> Matrix{
+        Matrix {
+            rows: rows,
+            cols: cols,
+            elems: vec![0.0; (rows*cols) as usize],
+        }
+    }
+    pub fn rows(&self) -> u32{
+        return self.rows;
+    }
+    pub fn cols(&self) -> u32{
+        return self.cols;
+    }
+
+}
