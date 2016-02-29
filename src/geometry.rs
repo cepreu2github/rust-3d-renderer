@@ -5,6 +5,8 @@ use std::ops::Sub;
 use std::ops::Mul;
 use std::ops::BitXor;
 use num::traits::NumCast;
+use std::ops::IndexMut;
+use std::ops::Index;
 
 #[derive(Copy, Clone)]
 pub struct Vector3D<T> {
@@ -77,15 +79,30 @@ impl<T: Mul<Output = T> + Sub<Output = T> + Copy> BitXor for Vector3D<T> {
 pub struct Matrix {
     rows: u32,
     cols: u32,
-    elems: Vec<f32>,
+    elems: Vec<Vec<f32>>,
 }
+
+impl Index<usize> for Matrix {
+    type Output = Vec<f32>;
+
+    fn index<'a>(&'a self, _index: usize) -> &'a Vec<f32> {
+        return &self.elems[_index];
+    }
+}
+
+impl IndexMut<usize> for Matrix {
+    fn index_mut<'a>(&'a mut self, _index: usize) -> &'a mut Vec<f32> {
+        return &mut self.elems[_index];
+    }
+}
+
 
 impl Matrix {
     pub fn new(rows: u32, cols: u32) -> Matrix{
         Matrix {
             rows: rows,
             cols: cols,
-            elems: vec![0.0; (cols*rows) as usize],
+            elems: vec![vec![0.0; cols as usize]; rows as usize],
         }
     }
     pub fn rows(&self) -> u32{
@@ -95,9 +112,9 @@ impl Matrix {
         return self.cols;
     }
     pub fn identity(dimensions: u32) -> Matrix{
-        let result = Matrix::new(dimensions, dimensions);
+        let mut result = Matrix::new(dimensions, dimensions);
         for i in 0..dimensions {
-            result[i][i] = 1.0;
+            result[i as usize][i as usize] = 1.0;
         }
         return result;
     }
