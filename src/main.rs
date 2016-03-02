@@ -16,6 +16,7 @@ use model::Model;
 use geometry::Vector3D;
 use sdlcanvas::SdlCanvas;
 use canvas::Canvas;
+use geometry::Matrix;
 
 //const WHITE: u32 = 0xFFFFFF;
 //const RED: u32 = 0xFF0000;
@@ -28,7 +29,11 @@ const DEPTH: usize = 255;
 fn main() {
     env_logger::init().unwrap();
     info!("starting up");
-    let light_direction = Vector3D::new(0.0, 0.0, -1.0);
+    
+    let matrix = Matrix::identity(3);
+    println!("{}", matrix);
+    println!("{}", matrix * Matrix::new(3, 3));
+    /*let light_direction = Vector3D::new(0.0, 0.0, -1.0);
     let mut model = Model::new("obj_african/african_head.obj");
     let mut canvas: SdlCanvas = Canvas::new(WIDTH, HEIGHT);
     info!("drawing model");
@@ -54,5 +59,5 @@ fn main() {
     info!("drawing result");
     canvas.out();
     info!("waiting for Enter");
-    canvas.wait_for_enter();
+    canvas.wait_for_enter();*/
 }

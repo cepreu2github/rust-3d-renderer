@@ -77,11 +77,10 @@ impl<T: Mul<Output = T> + Sub<Output = T> + Copy> BitXor for Vector3D<T> {
 }
 
 pub struct Matrix {
-    rows: u32,
-    cols: u32,
+    rows: usize,
+    cols: usize,
     elems: Vec<Vec<f32>>,
 }
-
 impl Index<usize> for Matrix {
     type Output = Vec<f32>;
 
@@ -89,32 +88,55 @@ impl Index<usize> for Matrix {
         return &self.elems[_index];
     }
 }
-
 impl IndexMut<usize> for Matrix {
     fn index_mut<'a>(&'a mut self, _index: usize) -> &'a mut Vec<f32> {
         return &mut self.elems[_index];
     }
 }
+impl fmt::Display for Matrix {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for i in 0..self.rows {
+            if i != 0 {
+                write!(f, "\n");
+            }
+            for j in 0..self.cols {
+                write!(f, "{}", self[i][j]);
+                if j != self.cols-1 {
+                    write!(f, ", ");
+                }
+            }
+        }
+        Ok(())
+    }
+}
+impl Mul for Matrix {
+    type Output = Matrix;
 
-
+    fn mul(self, rhs: Matrix) -> Matrix {
+        if self.cols != rhs.rows {
+            panic!("matrix sizes are nor correspond ({} and {})", self.cols, rhs.rows);
+        }
+        self
+    }
+}
 impl Matrix {
-    pub fn new(rows: u32, cols: u32) -> Matrix{
+    pub fn new(rows: usize, cols: usize) -> Matrix{
         Matrix {
             rows: rows,
             cols: cols,
-            elems: vec![vec![0.0; cols as usize]; rows as usize],
+            elems: vec![vec![0.0; cols]; rows],
         }
     }
-    pub fn rows(&self) -> u32{
+    pub fn rows(&self) -> usize{
         return self.rows;
     }
-    pub fn cols(&self) -> u32{
+    pub fn cols(&self) -> usize{
         return self.cols;
     }
-    pub fn identity(dimensions: u32) -> Matrix{
+    pub fn identity(dimensions: usize) -> Matrix{
         let mut result = Matrix::new(dimensions, dimensions);
         for i in 0..dimensions {
-            result[i as usize][i as usize] = 1.0;
+            result[i][i] = 1.0;
         }
         return result;
     }
