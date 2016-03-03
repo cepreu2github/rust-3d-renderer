@@ -114,9 +114,19 @@ impl Mul for Matrix {
 
     fn mul(self, rhs: Matrix) -> Matrix {
         if self.cols != rhs.rows {
-            panic!("matrix sizes are nor correspond ({} and {})", self.cols, rhs.rows);
+            panic!("matrix sizes are not correspond (lhs.cos={} and rhs.rows={})", self.cols, rhs.rows);
         }
-        self
+        let mut result = Matrix::new(self.rows, rhs.cols);
+        for i in 0..self.rows {
+            for j in 0..rhs.cols {
+                result[i][j] = 0.0;
+                for k in 0..self.cols {
+                    result[i][j] += self[i][k] * rhs[k][j];
+                }
+                debug!("result[{}][{}] = {}", i, j, result[i][j]);
+            }
+        }
+        return result;
     }
 }
 impl Matrix {
@@ -140,5 +150,62 @@ impl Matrix {
         }
         return result;
     }
-
+    pub fn transpose(&self) -> Matrix {
+        let mut result = Matrix::new(self.cols, self.rows);
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                result[j][i] = self[i][j];
+            }
+        }
+        return result;
+    }
+    pub fn inverse(&self) -> Result<Matrix, String> {
+        if (self.cols != self.rows) {
+            return Err("matrix are not square".to_owned());
+        }
+        // augmenting the square matrix with the identity matrix of the same 
+        // dimensions a => [ai]
+        let mut result = Matrix::new(self.rows, self.cols*2);
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                result[i][j] = self[i][j];
+            }
+        }
+        for i in 0..self.rows {
+            result[i][i+self.cols] = 1.;
+        }
+        // first pass
+        for i in 0..self.rows-1 {
+            for j in (0..result.cols).rev() {
+                result[i][j] /= result[i][i];
+            }
+            for k in i+1..self.rows {
+                let coeff = result[k][i];
+                for j in 0..result.cols {
+                    result[k][j] -= result[i][j]*coeff;
+                }
+            }
+        }
+        // normalize the last row
+        for j in (self.rows-1..result.cols).rev() {
+            result[self.rows-1][j] /= result[self.rows-1][self.rows-1];
+        }
+        // second pass
+        for i in (1..self.rows).rev() {
+            for k in (0..i).rev() {
+                let coeff = result[k][i];
+                for j in 0..result.cols {
+                    result[k][j] -= result[i][j]*coeff;
+                }
+            }
+        }
+        // cut the identity matrix back
+        let mut truncate = Matrix::new(self.rows, self.cols);
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                truncate[i][j] = result[i][j+self.cols];
+            }
+        }
+        return Ok(truncate);
+    }
 }
