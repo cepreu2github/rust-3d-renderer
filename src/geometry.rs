@@ -160,7 +160,7 @@ impl Matrix {
         return result;
     }
     pub fn inverse(&self) -> Result<Matrix, String> {
-        if (self.cols != self.rows) {
+        if self.cols != self.rows {
             return Err("matrix are not square".to_owned());
         }
         // augmenting the square matrix with the identity matrix of the same 
@@ -207,5 +207,16 @@ impl Matrix {
             }
         }
         return Ok(truncate);
+    }
+    pub fn m2v(m: Matrix) -> Vector3D<f32> {
+        return Vector3D::new(m[0][0]/m[3][0], m[1][0]/m[3][0], m[2][0]/m[3][0]);
+    }
+    pub fn v2m(v: Vector3D<f32>) -> Matrix {
+        let mut m = Matrix::new(4, 1);
+        m[0][0] = v.x;
+        m[1][0] = v.y;
+        m[2][0] = v.z;
+        m[3][0] = 1.0;
+        return m;
     }
 }

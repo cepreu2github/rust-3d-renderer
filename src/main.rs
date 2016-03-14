@@ -30,6 +30,7 @@ fn main() {
     env_logger::init().unwrap();
     info!("starting up");
     let light_direction = Vector3D::new(0.0, 0.0, -1.0);
+    let camera = Vector3D::new(0.0, 0.0, 3.0);   
     let mut model = Model::new("obj_african/african_head.obj");
     let mut canvas: SdlCanvas = Canvas::new(WIDTH, HEIGHT);
     info!("drawing model");
