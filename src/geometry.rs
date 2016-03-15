@@ -109,10 +109,10 @@ impl fmt::Display for Matrix {
         Ok(())
     }
 }
-impl Mul for Matrix {
+impl<'a> Mul for &'a Matrix {
     type Output = Matrix;
 
-    fn mul(self, rhs: Matrix) -> Matrix {
+    fn mul(self, rhs: &'a Matrix) -> Matrix {
         if self.cols != rhs.rows {
             panic!("matrix sizes are not correspond (lhs.cos={} and rhs.rows={})", self.cols, rhs.rows);
         }
@@ -137,12 +137,12 @@ impl Matrix {
             elems: vec![vec![0.0; cols]; rows],
         }
     }
-    pub fn rows(&self) -> usize{
+    /*pub fn rows(&self) -> usize{
         return self.rows;
     }
     pub fn cols(&self) -> usize{
         return self.cols;
-    }
+    }*/
     pub fn identity(dimensions: usize) -> Matrix{
         let mut result = Matrix::new(dimensions, dimensions);
         for i in 0..dimensions {
@@ -150,7 +150,7 @@ impl Matrix {
         }
         return result;
     }
-    pub fn transpose(&self) -> Matrix {
+    /*pub fn transpose(&self) -> Matrix {
         let mut result = Matrix::new(self.cols, self.rows);
         for i in 0..self.rows {
             for j in 0..self.cols {
@@ -207,7 +207,7 @@ impl Matrix {
             }
         }
         return Ok(truncate);
-    }
+    }*/
     pub fn m2v(m: Matrix) -> Vector3D<f32> {
         return Vector3D::new(m[0][0]/m[3][0], m[1][0]/m[3][0], m[2][0]/m[3][0]);
     }
@@ -217,6 +217,21 @@ impl Matrix {
         m[1][0] = v.y;
         m[2][0] = v.z;
         m[3][0] = 1.0;
+        return m;
+    }
+    pub fn viewport(x: usize, y: usize, w: usize, h: usize, depth: usize) -> Matrix {
+        let mut m = Matrix::identity(4);
+        let x = x as f32;
+        let y = y as f32;
+        let w = w as f32;
+        let h = h as f32;
+        let depth = depth as f32;
+        m[0][3] = x+w/2.0;
+        m[1][3] = y+h/2.0;
+        m[2][3] = depth/2.0;
+        m[0][0] = w/2.0;
+        m[1][1] = h/2.0;
+        m[2][2] = depth/2.0;
         return m;
     }
 }

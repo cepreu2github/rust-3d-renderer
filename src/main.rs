@@ -34,6 +34,9 @@ fn main() {
     let mut model = Model::new("obj_african/african_head.obj");
     let mut canvas: SdlCanvas = Canvas::new(WIDTH, HEIGHT);
     info!("drawing model");
+    let mut projection = Matrix::identity(4);
+    let view_port   = Matrix::viewport(WIDTH/8, HEIGHT/8, WIDTH*3/4, HEIGHT*3/4, DEPTH);
+    projection[3][2] = -1.0/camera.z;
     for i in 0..model.faces.len() {
         let face = model.faces[i];
         debug!("processing face:");
@@ -42,9 +45,8 @@ fn main() {
         let mut world_p: [Vector3D<f32>; 3] = [Vector3D::new(0.0, 0.0, 0.0); 3];
         for j in 0..3 {
             world_p[j] = model.vertices[face[j][0] as usize];
-            p[j].x = ((world_p[j].x+1.)*WIDTH as f32/2.) as i32;
-            p[j].y = ((world_p[j].y+1.)*HEIGHT as f32/2.) as i32;
-            p[j].z = ((world_p[j].z+1.)*DEPTH as f32/2.) as i32;
+            let mul = &view_port*&projection;
+            p[j] = (Matrix::m2v(&mul*&Matrix::v2m(world_p[j]))).to::<i32>();
         }
         let n = (world_p[2]-world_p[0])^(world_p[1]-world_p[0]);
         let n = n.normalized(1.0);
